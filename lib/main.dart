@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_store/model/product.dart';
 import 'package:flutter_store/model/app_state_model.dart';
+import 'package:flutter_store/model/product.dart';
 import 'package:flutter_store/styles.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -22,13 +22,15 @@ import 'package:provider/provider.dart';
 void main() {
   runApp(
     ChangeNotifierProvider<AppStateModel>(
-      builder: (context) => AppStateModel()..loadProducts(),
-      child: ShoppingApp(),
+      create: (context) => AppStateModel()..loadProducts(),
+      child: const ShoppingApp(),
     ),
   );
 }
 
 class ShoppingApp extends StatelessWidget {
+  const ShoppingApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -43,11 +45,11 @@ class ShoppingApp extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({this.title});
-  final String title;
+  const HomePage({Key? key, this.title}) : super(key: key);
+  final String? title;
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -56,11 +58,11 @@ class _HomePageState extends State<HomePage> {
   static const _navBarItems = [
     BottomNavigationBarItem(
       icon: Icon(Icons.add_shopping_cart),
-      title: Text('Products'),
+      label: 'Products',
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.shopping_basket),
-      title: Text('Check out'),
+      label: 'Check out',
     ),
   ];
 
@@ -68,10 +70,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title!),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -105,7 +107,7 @@ class _HomePageState extends State<HomePage> {
 }
 
 class ProductsPage extends StatelessWidget {
-  const ProductsPage();
+  const ProductsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +121,7 @@ class ProductsPage extends StatelessWidget {
 }
 
 class ProductList extends StatelessWidget {
-  const ProductList({@required this.products});
+  const ProductList({Key? key, required this.products}) : super(key: key);
   final List<Product> products;
 
   @override
@@ -138,9 +140,10 @@ class ProductList extends StatelessWidget {
 
 class ProductItem extends StatelessWidget {
   const ProductItem({
-    @required this.product,
-    @required this.last,
-  });
+    Key? key,
+    required this.product,
+    required this.last,
+  }) : super(key: key);
 
   final Product product;
   final bool last;
@@ -188,7 +191,8 @@ class ProductItem extends StatelessWidget {
           MaterialButton(
             minWidth: 48,
             onPressed: () {
-              Provider.of<AppStateModel>(context).addProductToCart(product.id);
+              Provider.of<AppStateModel>(context, listen: false)
+                  .addProductToCart(product.id);
             },
             child: const Icon(Icons.add_shopping_cart),
           )
@@ -198,7 +202,7 @@ class ProductItem extends StatelessWidget {
   }
 }
 
-class ProductSearchDelegate extends SearchDelegate<Product> {
+class ProductSearchDelegate extends SearchDelegate<Product?> {
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -246,7 +250,7 @@ class ProductSearchDelegate extends SearchDelegate<Product> {
 }
 
 class CheckOutPage extends StatelessWidget {
-  const CheckOutPage();
+  const CheckOutPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -286,13 +290,14 @@ class CheckOutPage extends StatelessWidget {
 
 class ShoppingCartItem extends StatelessWidget {
   const ShoppingCartItem({
-    @required this.product,
-    @required this.quantity,
-    @required this.formatter,
-  });
+    Key? key,
+    required this.product,
+    required this.quantity,
+    required this.formatter,
+  }) : super(key: key);
 
   final Product product;
-  final int quantity;
+  final int? quantity;
   final NumberFormat formatter;
 
   @override
@@ -330,7 +335,7 @@ class ShoppingCartItem extends StatelessWidget {
                         style: Styles.productRowItemName,
                       ),
                       Text(
-                        '${formatter.format(quantity * product.price)}',
+                        formatter.format(quantity! * product.price),
                         style: Styles.productRowItemName,
                       ),
                     ],
@@ -339,7 +344,7 @@ class ShoppingCartItem extends StatelessWidget {
                     height: 4,
                   ),
                   Text(
-                    '${quantity > 1 ? '$quantity x ' : ''}'
+                    '${quantity! > 1 ? '$quantity x ' : ''}'
                     '${formatter.format(product.price)}',
                     style: Styles.productRowItemPrice,
                   )
@@ -355,8 +360,9 @@ class ShoppingCartItem extends StatelessWidget {
 
 class ShoppingCartTotals extends StatelessWidget {
   const ShoppingCartTotals({
-    @required this.currencyFormat,
-  });
+    Key? key,
+    required this.currencyFormat,
+  }) : super(key: key);
 
   final NumberFormat currencyFormat;
 
